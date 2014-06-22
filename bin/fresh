@@ -678,7 +678,7 @@ _update_repo() {
   echo "* Updating $DISPLAY_NAME" | tee -a "$LOG_FILE"
   cd "$DIR"
   local GIT_OUTPUT_FILE="$(mktemp "${TMPDIR:-/tmp}/fresh.XXXXXX")"
-  git pull --rebase 2>&1 | tee "$GIT_OUTPUT_FILE" | sed 's/^/| /' | tee -a "$LOG_FILE"
+  (git pull --rebase && git submodule update --init --recursive; ) 2>&1 | tee "$GIT_OUTPUT_FILE" | sed 's/^/| /' | tee -a "$LOG_FILE"
   local GIT_RESULT="${PIPESTATUS[0]}"
   if egrep -q '^From .*(://github.com/|git@github.com:)' "$GIT_OUTPUT_FILE"; then
     local REPO_URL="$(egrep '^From .*(://github.com/|git@github.com:)' "$GIT_OUTPUT_FILE" | cut -d ' ' -f 2)"
